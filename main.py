@@ -9,7 +9,7 @@ app = FastAPI()
 def root():
     return FileResponse("public/index.html")
 
-@app.get("/hello") #http://127.0.0.1:8000/hello
+@app.get("/hello", status_code=201) #http://127.0.0.1:8000/hello
 def hello():
     data = {"message": "Hello world!"}
     json_data = jsonable_encoder(data)
