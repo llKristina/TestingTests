@@ -1,28 +1,24 @@
 import unittest
 import json
 import requests
-import os
-import signal
+from starlette.testclient import TestClient
 import uvicorn
 from main import app
+client = TestClient(app)
 
 url = "http://127.0.0.1:8000"
 
 class AppTests(unittest.TestCase):
 
 	def test_get_hello_endpoint(self):
-		r = requests.get(url+'/hello')
-		self.assertEqual(json.loads(r.text)['message'], 'Hello world!')
-		
-	def test_post_hello_endpoint(self):
-		r = requests.get(url+'/hello')
-		self.assertEqual(r.status_code, 200)
+		response = client.get("/hello")
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.json(), {"message": "Hello world!"})
 	
-	def test_stop_server(self):
-		r = requests.get(url+'/stop')
-		
+	def test_get__users_endpoint(self):
+		response = client.get("/users?name=Bob&age=30")
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.json(), {"user_name": "Bob", "user_age": "30"})
+
 if __name__ == '__main__':
-	uvicorn.run(app, host="127.0.0.1", port=8000)
     unittest.main()
-	pid = os.getpid()
-    os.kill(pid, signal.SIGINT)
